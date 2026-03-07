@@ -1,0 +1,5 @@
+theme: minima  # Este es el tema por defecto más simple y bonito
+
+# Opcional: personaliza un poco
+title: Mi App Web
+description: Una Progressive Web App simple
