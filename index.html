@@ -2,21 +2,486 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi App Web</title>
-    <link rel="manifest" href="manifest.json">  <!-- Enlace al manifest -->
-    <link rel="apple-touch-icon" href="icon.png">  <!-- Icono para iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">  <!-- Para modo app en iOS -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">  <!-- Barra de estado -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi App Personal</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f0f17">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --card-bg: rgba(20, 25, 40, 0.65);
+            --accent: #7c3aed;
+            --accent-dark: #5b21b6;
+            --green: #10b981;
+            --red: #ef4444;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #0a0e17, #111827);
+        }
+        header {
+            padding: 16px 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #1e293b, #0f172a);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+        .tab-content {
+            padding: 20px;
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+            display: none;
+        }
+        .tab-content.active { display: block; }
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            padding: 20px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            -webkit-background-clip: text;          /* Safari/iOS necesita esto */
+            background-clip: text;                  /* Estándar moderno (agrega esto) */
+            -webkit-text-fill-color: transparent;   /* Necesario para que el texto sea "recortado" por el gradiente */
+            color: transparent;                     /* Fallback para navegadores que no soportan background-clip: text */
+        }
+        input, button {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 1rem;
+            color: var(--text);
+        }
+        input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+            width: 100%;
+            margin: 8px 0;
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            width: auto;
+        }
+        /* Custom Checkbox */
+        input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+        }
+        input[type="checkbox"]:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        input[type="checkbox"]:checked::before {
+            content: '✔';
+            position: absolute;
+            top: -2px;
+            left: 3px;
+            color: white;
+            font-size: 14px;
+        }
+        /* Botón Borrar */
+        .tarea button {
+            background: var(--red);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        /* Cuenta */
+        #perfil-form { display: none; }
+        #perfil-view p { margin: 8px 0; }
+        #foto-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #334155; margin: 16px auto; display: block; border: 2px solid var(--border); }
+
+        /* Rutina */
+        .tarea { 
+            background: rgba(30,41,59,0.7); 
+            border-radius: 12px; 
+            padding: 14px; 
+            margin: 12px 0; 
+            border: 1px solid var(--border); 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            backdrop-filter: blur(8px);
+        }
+        .tarea.completed { text-decoration: line-through; opacity: 0.6; }
+        .tarea span { flex: 1; }
+
+        /* Horario */
+        #horario-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 4px;
+            font-size: 0.85rem;
+        }
+        .time-label, .day-header {
+            background: rgba(30,41,59,0.5);
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        .day-header { background: linear-gradient(135deg, #334155, #1e293b); }
+        .slot {
+            background: rgba(50, 60, 80, 0.4);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 8px;
+            min-height: 80px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .slot:hover { background: rgba(70, 80, 100, 0.6); }
+        .slot.editable { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(124,58,237,0.4); }
+        .slot-title { font-weight: 600; font-size: 1rem; }
+        .slot-subtitle { font-size: 0.8rem; opacity: 0.8; }
+
+        /* Botón edición horario */
+        #edit-horario {
+            width: 100%; margin-top: 16px; padding: 14px; 
+            background: var(--green); color: white; border: none; 
+            border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+        }
+        #edit-horario.done {
+            background: var(--accent-dark);
+        }
+
+        /* Modal para edición de slot */
+        #modal-edit-slot {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        #modal-content input {
+            margin: 12px 0;
+        }
+        #modal-content button {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        nav {
+            position: fixed; bottom: 0; width: 100%;
+            background: rgba(15,23,42,0.8); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); display: flex; padding: 12px 0;
+        }
+        nav button {
+            flex: 1; background: none; border: none; color: var(--text-muted);
+            font-size: 0.9rem; padding: 8px; display: flex; flex-direction: column;
+            align-items: center; gap: 4px;
+        }
+        nav button.active { color: white; text-shadow: 0 0 10px var(--accent); }
+        nav button::before { content: ''; font-size: 1.6rem; }
+        #cuenta button::before { content: '👤'; }
+        #rutina button::before { content: '📋'; }
+        #horario button::before { content: '🗓️'; }
+    </style>
 </head>
 <body>
-    <h1>Hola, esta es mi app web!</h1>
-    <p>Puedes agregar más contenido aquí.</p>
-    <script src="app.js"></script>  <!-- Si necesitas JS -->
+
+    <header>Mi App Personal</header>
+
+    <!-- Cuenta -->
+    <div id="cuenta" class="tab-content active">
+        <div class="card">
+            <h2 class="section-title">Cuenta</h2>
+            <p>Bienvenido, <strong id="nombre-display">Benjamin</strong> 👋</p>
+            <img id="foto-preview" src="" alt="Foto de perfil">
+            <div id="perfil-view">
+                <p><strong>Email:</strong> <span id="email-display">benjamin@example.com</span></p>
+                <button onclick="toggleEditPerfil()" style="margin-top:16px; width:100%; background:var(--accent);">Editar Perfil</button>
+            </div>
+            <form id="perfil-form">
+                <input type="text" id="nombre" placeholder="Nombre">
+                <input type="email" id="email" placeholder="Email">
+                <input type="file" id="foto" accept="image/*" style="color:white;">
+                <button type="button" onclick="guardarPerfil()">Guardar</button>
+                <button type="button" onclick="toggleEditPerfil()" style="background:var(--red); margin-top:8px;">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rutina -->
+    <div id="rutina" class="tab-content">
+        <div class="card">
+            <h2 class="section-title">Rutina</h2>
+            <div style="display:flex; margin-bottom:16px;">
+                <input type="text" id="nueva-tarea" placeholder="Agregar acción pendiente..." style="flex:1; margin-right:8px;">
+                <button onclick="agregarTarea()">+</button>
+            </div>
+            <div id="lista-rutina"></div>
+        </div>
+    </div>
+
+    <!-- Horario -->
+    <div id="horario" class="tab-content">
+        <div class="card">
+            <h2 class="section-title">Horario Semanal</h2>
+            <div id="horario-grid"></div>
+            <button id="edit-horario" onclick="toggleEditHorario()">Editar</button>
+        </div>
+    </div>
+
+    <!-- Modal para editar slot -->
+    <div id="modal-edit-slot">
+        <div id="modal-content">
+            <h3 style="text-align:center; margin-bottom:16px;">Editar Bloque</h3>
+            <input type="text" id="slot-titulo" placeholder="Título">
+            <input type="text" id="slot-subtitulo" placeholder="Subtítulo (opcional)">
+            <label style="display:block; margin:12px 0 4px;">Color:</label>
+            <input type="color" id="slot-color" style="width:100%; height:40px; border:none; background:none; cursor:pointer;">
+            <button onclick="guardarSlotEdit()">Guardar</button>
+            <button onclick="cerrarModal()" style="background:var(--red); margin-top:8px;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav>
+        <button class="active" onclick="cambiarTab('cuenta')">Cuenta</button>
+        <button onclick="cambiarTab('rutina')">Rutina</button>
+        <button onclick="cambiarTab('horario')">Horario</button>
+    </nav>
+
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');  <!-- Registra el service worker para offline -->
+        // Datos
+        const bloques = [
+            {inicio: "8:20", fin: "9:30"},
+            {inicio: "9:40", fin: "10:50"},
+            {inicio: "11:00", fin: "12:10"},
+            {inicio: "12:20", fin: "13:30"},
+            {inicio: "14:50", fin: "16:00"},
+            {inicio: "16:10", fin: "17:20"}
+        ];
+        const dias = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+
+        let editMode = false;
+        let horarioData = JSON.parse(localStorage.getItem('horario') || '{}');
+        let currentSlotKey = null;
+
+        // Cambiar tabs
+        function cambiarTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
         }
+
+        // Cuenta - Perfil
+        function cargarPerfil() {
+            const data = JSON.parse(localStorage.getItem('perfil') || '{}');
+            document.getElementById('nombre-display').textContent = data.nombre || 'Benjamin';
+            document.getElementById('email-display').textContent = data.email || 'benjamin@example.com';
+            document.getElementById('foto-preview').src = data.foto || '';
+            document.getElementById('perfil-view').style.display = 'block';
+            document.getElementById('perfil-form').style.display = 'none';
+        }
+
+        function toggleEditPerfil() {
+            const view = document.getElementById('perfil-view');
+            const form = document.getElementById('perfil-form');
+            if (view.style.display === 'none') {
+                view.style.display = 'block';
+                form.style.display = 'none';
+            } else {
+                view.style.display = 'none';
+                form.style.display = 'block';
+                // Precargar valores
+                const data = JSON.parse(localStorage.getItem('perfil') || '{}');
+                document.getElementById('nombre').value = data.nombre || '';
+                document.getElementById('email').value = data.email || '';
+            }
+        }
+
+        function guardarPerfil() {
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const file = document.getElementById('foto').files[0];
+
+            const data = {nombre, email};
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    data.foto = e.target.result;
+                    localStorage.setItem('perfil', JSON.stringify(data));
+                    cargarPerfil();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const old = JSON.parse(localStorage.getItem('perfil') || '{}');
+                data.foto = old.foto;
+                localStorage.setItem('perfil', JSON.stringify(data));
+                cargarPerfil();
+            }
+        }
+
+        // Rutina
+        function cargarRutina() {
+            const tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+            const container = document.getElementById('lista-rutina');
+            container.innerHTML = '';
+            tareas.forEach((t, i) => {
+                const div = document.createElement('div');
+                div.className = `tarea ${t.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleCompletado(${i})">
+                    <span>${t.texto}</span>
+                    <button onclick="borrarTarea(${i})">X</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function agregarTarea() {
+            const input = document.getElementById('nueva-tarea');
+            if (!input.value.trim()) return;
+            const tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+            tareas.push({texto: input.value, completed: false});
+            localStorage.setItem('rutina', JSON.stringify(tareas));
+            input.value = '';
+            cargarRutina();
+        }
+
+        function toggleCompletado(index) {
+            const tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+            tareas[index].completed = !tareas[index].completed;
+            localStorage.setItem('rutina', JSON.stringify(tareas));
+            cargarRutina();
+        }
+
+        function borrarTarea(index) {
+            let tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+            tareas.splice(index, 1);
+            localStorage.setItem('rutina', JSON.stringify(tareas));
+            cargarRutina();
+        }
+
+        // Horario
+        function generarHorario() {
+            const grid = document.getElementById('horario-grid');
+            grid.innerHTML = '';
+
+            // Headers
+            grid.innerHTML += '<div class="time-label"></div>'; // esquina vacía
+            dias.forEach(d => grid.innerHTML += `<div class="day-header">${d}</div>`);
+
+            bloques.forEach((b, row) => {
+                grid.innerHTML += `<div class="time-label">${b.inicio}<br>-<br>${b.fin}</div>`;
+                dias.forEach((d, col) => {
+                    const key = `${d.toLowerCase()}-${row+1}`;
+                    const slotData = horarioData[key] || {};
+                    const div = document.createElement('div');
+                    div.className = 'slot';
+                    div.dataset.key = key;
+                    div.style.background = slotData.color ? `${slotData.color}40` : '';
+                    div.innerHTML = slotData.titulo ? `
+                        <div class="slot-title">${slotData.titulo}</div>
+                        <div class="slot-subtitle">${slotData.subtitulo || ''}</div>
+                    ` : '';
+                    div.onclick = () => editarSlot(div);
+                    grid.appendChild(div);
+                });
+            });
+        }
+
+        function toggleEditHorario() {
+            editMode = !editMode;
+            const btn = document.getElementById('edit-horario');
+            btn.textContent = editMode ? '✔ Listo' : 'Editar';
+            btn.classList.toggle('done', editMode);
+            document.querySelectorAll('.slot').forEach(s => s.classList.toggle('editable', editMode));
+        }
+
+        function editarSlot(slot) {
+            if (!editMode) return;
+            currentSlotKey = slot.dataset.key;
+            const slotData = horarioData[currentSlotKey] || {};
+            document.getElementById('slot-titulo').value = slotData.titulo || '';
+            document.getElementById('slot-subtitulo').value = slotData.subtitulo || '';
+            document.getElementById('slot-color').value = slotData.color || '#6366f1';
+            document.getElementById('modal-edit-slot').style.display = 'flex';
+        }
+
+        function guardarSlotEdit() {
+            const titulo = document.getElementById('slot-titulo').value.trim();
+            const subtitulo = document.getElementById('slot-subtitulo').value.trim();
+            const color = document.getElementById('slot-color').value;
+
+            if (titulo) {
+                horarioData[currentSlotKey] = {titulo, subtitulo, color};
+            } else {
+                delete horarioData[currentSlotKey];
+            }
+            localStorage.setItem('horario', JSON.stringify(horarioData));
+            generarHorario();
+            cerrarModal();
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-edit-slot').style.display = 'none';
+        }
+
+        // Init
+        window.onload = () => {
+            cargarPerfil();
+            cargarRutina();
+            generarHorario();
+            if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+        };
     </script>
 </body>
 </html>
