@@ -3,316 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mi App Personal</title>
-    
-    <!-- PWA -->
+    <title>Mi Rutina</title>
+
+    <!-- PWA essentials -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-512.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f0f17">
+    <meta name="theme-color" content="#000000">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #0a0e17;
-            --card-bg: rgba(20, 25, 40, 0.65);
-            --accent: #7c3aed;
-            --accent-dark: #5b21b6;
-            --green: #10b981;
-            --red: #ef4444;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --border: rgba(255,255,255,0.1);
+            --bg: #000000;
+            --card-bg: #1c1c1e;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent: #0a84ff;
+            --accent-dark: #0066cc;
+            --green: #34c759;
+            --red: #ff3b30;
+            --border: #2c2c2e;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
-            color: var(--text);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow: hidden;
-            background: linear-gradient(to bottom, #0a0e17, #111827);
         }
         header {
-            padding: 16px 20px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #1e293b, #0f172a);
+            padding: 44px 16px 8px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-align: center;
+            background: var(--bg);
             border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(10px);
         }
         .tab-content {
-            padding: 20px;
-            height: calc(100vh - 140px);
+            padding: 16px;
+            height: calc(100vh - 120px);
             overflow-y: auto;
-            display: none;
         }
-        .tab-content.active { display: block; }
+        .tab-content:not(.active) { display: none; }
         .card {
             background: var(--card-bg);
-            border-radius: 20px;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
             border: 1px solid var(--border);
-            backdrop-filter: blur(16px);
-            padding: 20px;
-            margin: 16px 0;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
         .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #7c3aed, #3b82f6);
-            -webkit-background-clip: text;          /* Safari/iOS necesita esto */
-            background-clip: text;                  /* Estándar moderno (agrega esto) */
-            -webkit-text-fill-color: transparent;   /* Necesario para que el texto sea "recortado" por el gradiente */
-            color: transparent;                     /* Fallback para navegadores que no soportan background-clip: text */
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
         }
-        input, button {
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        input[type="text"], input[type="email"] {
+            flex: 1;
+            background: #2c2c2e;
             border: none;
-            border-radius: 12px;
-            padding: 14px 16px;
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
             font-size: 1rem;
-            color: var(--text);
         }
-        input {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(8px);
-            width: 100%;
-            margin: 8px 0;
+        input[type="file"] {
+            color: var(--text-primary);
+            margin: 12px 0;
         }
         button {
             background: var(--accent);
             color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
             font-weight: 600;
             cursor: pointer;
-            width: auto;
+            min-width: 80px;
         }
-        /* Custom Checkbox */
-        input[type="checkbox"] {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            position: relative;
-        }
-        input[type="checkbox"]:checked {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-        input[type="checkbox"]:checked::before {
-            content: '✔';
-            position: absolute;
-            top: -2px;
-            left: 3px;
-            color: white;
-            font-size: 14px;
-        }
-        /* Botón Borrar */
-        .tarea button {
-            background: var(--red);
-            border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-        }
-        /* Cuenta */
-        #perfil-form { display: none; }
-        #perfil-view p { margin: 8px 0; }
-        #foto-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #334155; margin: 16px auto; display: block; border: 2px solid var(--border); }
+        button.secondary { background: #3a3a3c; }
+        button.danger { background: var(--red); }
 
         /* Rutina */
-        .tarea { 
-            background: rgba(30,41,59,0.7); 
-            border-radius: 12px; 
-            padding: 14px; 
-            margin: 12px 0; 
-            border: 1px solid var(--border); 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            backdrop-filter: blur(8px);
+        .task-item {
+            background: #2c2c2e;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .tarea.completed { text-decoration: line-through; opacity: 0.6; }
-        .tarea span { flex: 1; }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            background: #3a3a3c;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .checkbox-custom.checked {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .checkbox-custom.checked::after {
+            content: '';
+            position: absolute;
+            inset: 6px 4px;
+            border: 2px solid white;
+            border-top: none;
+            border-right: none;
+            transform: rotate(-45deg);
+        }
 
         /* Horario */
-        #horario-container {
-            width: 100%;
-            overflow-x: hidden;          /* No scroll horizontal */
-            overflow-y: auto;            /* Solo vertical si se necesita */
-            -webkit-overflow-scrolling: touch;
-        }
         #horario-grid {
             display: grid;
-            grid-template-columns: 50px repeat(5, 1fr);   /* Tiempo angosto + 5 días iguales */
-            grid-auto-rows: minmax(90px, 110px);          /* Celdas más anchas que altas (proporción ~1.4–1.6:1) */
-            gap: 6px;                                     /* Espacio pequeño pero visible */
+            grid-template-columns: 60px repeat(5, 1fr);
+            grid-auto-rows: 80px;
+            gap: 6px;
             width: 100%;
-            min-width: 100%;                              /* Fuerza a ocupar todo el ancho */
         }
-        .time-label {
-            font-size: 0.8rem;
-            line-height: 1.3;
+        .time-col {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
             text-align: right;
-            padding-right: 6px;
-            white-space: nowrap;
-            font-weight: 500;
+            padding-top: 8px;
+            line-height: 1.2;
         }
         .day-header {
-            font-weight: 700;
-            font-size: 0.95rem;
-            padding: 4px 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
             text-align: center;
-            background: linear-gradient(135deg, #334155, #1e293b);
-            border-radius: 8px;
+            padding: 8px 0;
+            color: var(--text-secondary);
         }
         .slot {
-            background: rgba(50, 60, 80, 0.4);
-            border: 1px dashed var(--border);
-            border-radius: 10px;
-            padding: 10px 8px;
+            background: #2c2c2e;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             overflow: hidden;
-            word-break: break-word;          /* Rompe palabras largas */
-            hyphens: auto;                   /* Mejor legibilidad en español */
-            min-height: 90px;
-            max-height: 120px;
+            cursor: pointer;
+            padding: 6px;
         }
-        .slot:hover { background: rgba(70, 80, 100, 0.6); }
-        .slot.editable { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(124,58,237,0.4); }
         .slot-title {
-            font-weight: 700;
-            font-size: 1rem;
-            line-height: 1.2;
-            margin-bottom: 4px;
+            font-weight: 600;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .slot-subtitle {
-            font-size: 0.8rem;
-            line-height: 1.15;
-            opacity: 0.85;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        /* Botón edición horario */
-        #edit-horario {
-            width: 100%; margin-top: 16px; padding: 14px; 
-            background: var(--green); color: white; border: none; 
-            border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
-        }
-        #edit-horario.done {
-            background: var(--accent-dark);
+        /* Cuenta */
+        #foto-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #2c2c2e;
+            margin: 0 auto 16px;
+            display: block;
+            object-fit: cover;
         }
 
-        /* Modal para edición de slot */
-        #modal-edit-slot {
+        /* Navegación inferior */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+        }
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 33%;
+            cursor: pointer;
+        }
+        nav button.active { color: var(--text-primary); }
+        nav button .icon-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: 2px solid currentColor;
+            position: relative;
+        }
+        /* Rutina: líneas horizontales (lista) */
+        #rutina-btn .icon-box::before,
+        #rutina-btn .icon-box::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            width: 18px;
+            height: 2px;
+            background: currentColor;
+        }
+        #rutina-btn .icon-box::before { top: 8px; }
+        #rutina-btn .icon-box::after { top: 18px; }
+
+        /* Horario: rectángulo con líneas (calendario) */
+        #horario-btn .icon-box::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; right: 5px;
+            height: 6px;
+            border-bottom: 2px solid currentColor;
+        }
+
+        /* Cuenta: silueta persona */
+        #cuenta-btn .icon-box::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 7px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+        }
+        #cuenta-btn .icon-box::after {
+            content: '';
+            position: absolute;
+            bottom: 5px; left: 5px; right: 5px;
+            height: 12px;
+            border-radius: 0 0 10px 10px;
+            border: 2px solid currentColor;
+            border-top: none;
+        }
+
+        /* Modal edición horario */
+        #modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0,0,0,0.7);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 100;
         }
         #modal-content {
             background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(16px);
-            padding: 20px;
+            border-radius: 18px;
+            padding: 24px;
             width: 90%;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            max-width: 360px;
+            border: 1px solid var(--border);
         }
         #modal-content input {
-            margin: 12px 0;
+            width: 100%;
+            margin: 10px 0;
         }
         #modal-content button {
             width: 100%;
             margin-top: 12px;
         }
-
-        nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: rgba(15,23,42,0.8); backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border); display: flex; padding: 12px 0;
+        .btn-verde {
+            background: var(--green) !important;
         }
-        nav button {
-            flex: 1; background: none; border: none; color: var(--text-muted);
-            font-size: 0.9rem; padding: 8px; display: flex; flex-direction: column;
-            align-items: center; gap: 4px;
-        }
-        nav button.active { color: white; text-shadow: 0 0 10px var(--accent); }
-        nav button::before { content: ''; font-size: 1.6rem; }
-        #cuenta button::before { content: '👤'; }
-        #rutina button::before { content: '📋'; }
-        #horario button::before { content: '🗓️'; }
-
-        #modal-edit-slot {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.65);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            justify-content: center;
+        .btn-azul {
+            background: var(--accent) !important;
+        }        
+        /* Botón flotante circular */
+        #toggle-add-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: flex;
             align-items: center;
-            z-index: 2000;  /* Más alto para que quede encima de todo */
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
-        @media (max-width: 380px) {
-            #horario-grid {
-                grid-template-columns: 45px repeat(5, 1fr);
-                grid-auto-rows: minmax(80px, 100px);
-            }
-            .slot-title { font-size: 0.9rem; }
-            .slot-subtitle { font-size: 0.75rem; }
-        }
+        /* Cuando está en "Listo" (modo input visible) */
+        #toggle-add-btn.listo {
+            width: 100%;
+            height: 56px;
+            border-radius: 12px;
+            background: var(--green);
+            font-size: 1.1rem;
+            bottom: 100px;
+            right: 16px;
+            left: 16px;
+            position: fixed;
+            z-index: 10;
+        }        
     </style>
 </head>
 <body>
 
-    <!-- <header>Mi App Personal</header> -->
-
-    <!-- Cuenta -->
-    <div id="cuenta" class="tab-content active">
-        <div class="card">
-            <h2 class="section-title">Cuenta</h2>
-            <p>Bienvenido, <strong id="nombre-display">Benjamin</strong> 👋</p>
-            <img id="foto-preview" src="" alt="Foto de perfil">
-            <div id="perfil-view">
-                <p><strong>Email:</strong> <span id="email-display">benjamin@example.com</span></p>
-                <button onclick="toggleEditPerfil()" style="margin-top:16px; width:100%; background:var(--accent);">Editar Perfil</button>
-            </div>
-            <form id="perfil-form">
-                <input type="text" id="nombre" placeholder="Nombre">
-                <input type="email" id="email" placeholder="Email">
-                <input type="file" id="foto" accept="image/*" style="color:white;">
-                <button type="button" onclick="guardarPerfil()">Guardar</button>
-                <button type="button" onclick="toggleEditPerfil()" style="background:var(--red); margin-top:8px;">Cancelar</button>
-            </form>
-        </div>
-    </div>
+    <!-- <header>Mi Rutina</header> -->
 
     <!-- Rutina -->
-    <div id="rutina" class="tab-content">
+    <div id="rutina" class="tab-content active">
         <div class="card">
             <h2 class="section-title">Rutina</h2>
-            <div style="display:flex; margin-bottom:16px;">
-                <input type="text" id="nueva-tarea" placeholder="Agregar acción pendiente..." style="flex:1; margin-right:8px;">
-                <button onclick="agregarTarea()">+</button>
+            
+            <!-- Contenedor del input (solo visible cuando se activa) -->
+            <div id="add-task-container" style="display: none; margin-bottom: 80px;">
+                <div class="input-group">
+                    <input type="text" id="nueva-tarea" placeholder="Añadir nueva tarea">
+                    <button onclick="agregarTarea()">Añadir</button>
+                </div>
             </div>
+
+            <!-- Botón flotante circular (+) a la derecha -->
+            <button id="toggle-add-btn" 
+                    onclick="toggleAddInput()"
+                    style="position: fixed; bottom: 100px; right: 20px; z-index: 10;">
+                +
+            </button>
+
             <div id="lista-rutina"></div>
         </div>
     </div>
@@ -320,143 +360,172 @@
     <!-- Horario -->
     <div id="horario" class="tab-content">
         <div class="card">
-            <h2 class="section-title">Horario Semanal</h2>
-            <div id="horario-container">
-                <div id="horario-grid"></div>
+            <h2 class="section-title">Horario</h2>
+            <div id="horario-grid"></div>
+            <button id="edit-btn" onclick="toggleEditMode()" style="margin-top:16px; width:100%; background:var(--green);">Editar</button>
+        </div>
+    </div>
+
+    <!-- Cuenta -->
+    <div id="cuenta" class="tab-content">
+        <div class="card">
+            <h2 class="section-title">Cuenta</h2>
+            <img id="foto-preview" src="" alt="Foto de perfil">
+            <p><strong>Nombre:</strong> <span id="nombre-display">Usuario</span></p>
+            <p><strong>Email:</strong> <span id="email-display">email@ejemplo.com</span></p>
+            <button onclick="mostrarFormulario()" style="margin-top:16px; width:100%;">Editar perfil</button>
+
+            <div id="form-edit" style="display:none; margin-top:16px;">
+                <input type="text" id="nombre-input" placeholder="Nombre">
+                <input type="email" id="email-input" placeholder="Email">
+                <input type="file" id="foto-input" accept="image/*">
+                <button onclick="guardarPerfil()" style="margin-top:12px; width:100%;">Guardar cambios</button>
+                <button onclick="ocultarFormulario()" style="margin-top:8px; width:100%;" class="secondary">Cancelar</button>
             </div>
-            <button id="edit-horario" onclick="toggleEditHorario()">Editar</button>
         </div>
     </div>
 
-    <!-- Modal para editar slot -->
-    <div id="modal-edit-slot">
-        <div id="modal-content">
-            <h3 style="text-align:center; margin-bottom:16px;">Editar Bloque</h3>
-            <input type="text" id="slot-titulo" placeholder="Título">
-            <input type="text" id="slot-subtitulo" placeholder="Subtítulo (opcional)">
-            <label style="display:block; margin:12px 0 4px;">Color:</label>
-            <input type="color" id="slot-color" style="width:100%; height:40px; border:none; background:none; cursor:pointer;">
-            <button onclick="guardarSlotEdit()">Guardar</button>
-            <button onclick="cerrarModal()" style="background:var(--red); margin-top:8px;">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Bottom Nav -->
+    <!-- Navegación -->
     <nav>
-        <button class="active" onclick="cambiarTab('cuenta')">Cuenta</button>
-        <button onclick="cambiarTab('rutina')">Rutina</button>
-        <button onclick="cambiarTab('horario')">Horario</button>
+        <button id="rutina-btn" class="active" onclick="cambiarTab('rutina')">
+            <div class="icon-box"></div>
+            Rutina
+        </button>
+        <button id="horario-btn" onclick="cambiarTab('horario')">
+            <div class="icon-box"></div>
+            Horario
+        </button>
+        <button id="cuenta-btn" onclick="cambiarTab('cuenta')">
+            <div class="icon-box"></div>
+            Cuenta
+        </button>
     </nav>
 
+    <!-- Modal edición horario -->
+    <div id="modal">
+        <div id="modal-content">
+            <h3 style="margin-bottom:16px; text-align:center;">Editar bloque</h3>
+            <input type="text" id="slot-titulo" placeholder="Título">
+            <input type="text" id="slot-subtitulo" placeholder="Subtítulo (opcional)">
+            <label style="display:block; margin:12px 0 4px; color:var(--text-secondary);">Color</label>
+            <input type="color" id="slot-color" value="#0a84ff" style="width:100%; height:40px; border:none; background:transparent;">
+            <button onclick="guardarSlot()">Guardar</button>
+            <button onclick="cerrarModal()" style="margin-top:8px;" class="secondary">Cancelar</button>
+        </div>
+    </div>
+
     <script>
-        // Datos
         const bloques = [
-            {inicio: "8:20", fin: "9:30"},
-            {inicio: "9:40", fin: "10:50"},
-            {inicio: "11:00", fin: "12:10"},
-            {inicio: "12:20", fin: "13:30"},
-            {inicio: "14:50", fin: "16:00"},
-            {inicio: "16:10", fin: "17:20"}
+            {inicio:'8:20', fin:'9:30'},
+            {inicio:'9:40', fin:'10:50'},
+            {inicio:'11:00', fin:'12:10'},
+            {inicio:'12:20', fin:'13:30'},
+            {inicio:'14:50', fin:'16:00'},
+            {inicio:'16:10', fin:'17:20'}
         ];
-        const dias = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+        const dias = ['Lun','Mar','Mié','Jue','Vie'];
 
         let editMode = false;
         let horarioData = JSON.parse(localStorage.getItem('horario') || '{}');
-        let currentSlotKey = null;
+        let currentKey = null;
 
-        // Cambiar tabs
-        function cambiarTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // Cuenta - Perfil
-        function cargarPerfil() {
-            const data = JSON.parse(localStorage.getItem('perfil') || '{}');
-            document.getElementById('nombre-display').textContent = data.nombre || 'Benjamin';
-            document.getElementById('email-display').textContent = data.email || 'benjamin@example.com';
-            document.getElementById('foto-preview').src = data.foto || '';
-            document.getElementById('perfil-view').style.display = 'block';
-            document.getElementById('perfil-form').style.display = 'none';
-        }
-
-        function toggleEditPerfil() {
-            const view = document.getElementById('perfil-view');
-            const form = document.getElementById('perfil-form');
-            if (view.style.display === 'none') {
-                view.style.display = 'block';
-                form.style.display = 'none';
-            } else {
-                view.style.display = 'none';
-                form.style.display = 'block';
-                // Precargar valores
-                const data = JSON.parse(localStorage.getItem('perfil') || '{}');
-                document.getElementById('nombre').value = data.nombre || '';
-                document.getElementById('email').value = data.email || '';
-            }
-        }
-
-        function guardarPerfil() {
-            const nombre = document.getElementById('nombre').value;
-            const email = document.getElementById('email').value;
-            const file = document.getElementById('foto').files[0];
-
-            const data = {nombre, email};
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    data.foto = e.target.result;
-                    localStorage.setItem('perfil', JSON.stringify(data));
-                    cargarPerfil();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                const old = JSON.parse(localStorage.getItem('perfil') || '{}');
-                data.foto = old.foto;
-                localStorage.setItem('perfil', JSON.stringify(data));
-                cargarPerfil();
-            }
+        function cambiarTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tab + '-btn').classList.add('active');
         }
 
         // Rutina
         function cargarRutina() {
             const tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
-            const container = document.getElementById('lista-rutina');
-            container.innerHTML = '';
+            const cont = document.getElementById('lista-rutina');
+            cont.innerHTML = '';
             tareas.forEach((t, i) => {
                 const div = document.createElement('div');
-                div.className = `tarea ${t.completed ? 'completed' : ''}`;
+                div.className = `task-item ${t.done ? 'completed' : ''}`;
                 div.innerHTML = `
-                    <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleCompletado(${i})">
-                    <span>${t.texto}</span>
-                    <button onclick="borrarTarea(${i})">X</button>
+                    <div class="checkbox-custom ${t.done ? 'checked' : ''}" onclick="toggleTarea(${i})"></div>
+                    <span class="task-text" style="flex:1;">${t.texto}</span>
+                    <button onclick="eliminarTarea(${i})" style="background:var(--red); padding:6px 12px; font-size:0.9rem;">Eliminar</button>
                 `;
-                container.appendChild(div);
+                cont.appendChild(div);
             });
         }
+
+        // Variables de control
+        let mostrandoInput = false;
+
+        // Toggle mostrar/ocultar input
+        function toggleAddInput() {
+            mostrandoInput = !mostrandoInput;
+            
+            const container = document.getElementById('add-task-container');
+            const btn = document.getElementById('toggle-add-btn');
+            
+            if (mostrandoInput) {
+                container.style.display = 'block';
+                btn.textContent = 'Listo';
+                btn.classList.add('listo');          // Aplica estilo rectangular y full-width
+                document.getElementById('nueva-tarea').focus();
+            } else {
+                container.style.display = 'none';
+                btn.textContent = '+';
+                btn.classList.remove('listo');       // Vuelve a círculo flotante derecha
+                document.getElementById('nueva-tarea').value = '';
+            }
+        }   
 
         function agregarTarea() {
             const input = document.getElementById('nueva-tarea');
             if (!input.value.trim()) return;
-            const tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
-            tareas.push({texto: input.value, completed: false});
-            localStorage.setItem('rutina', JSON.stringify(tareas));
-            input.value = '';
-            cargarRutina();
-        }
 
-        function toggleCompletado(index) {
-            const tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
-            tareas[index].completed = !tareas[index].completed;
-            localStorage.setItem('rutina', JSON.stringify(tareas));
-            cargarRutina();
-        }
-
-        function borrarTarea(index) {
             let tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
-            tareas.splice(index, 1);
+            tareas.push({texto: input.value.trim(), done: false});
+            localStorage.setItem('rutina', JSON.stringify(tareas));
+
+            input.value = '';
+            toggleAddInput(); // cierra automáticamente después de añadir
+            cargarRutina();
+        }
+
+        // Reset automático a las 7:00 AM cada día
+        function resetTareasCompletadasSiEsNecesario() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            const minutos = ahora.getMinutes();
+
+            // Solo actuamos cerca de las 7:00 (para no depender de exactitud de segundos)
+            if (hora === 7 && minutos < 5) {  // ventana de 5 minutos para evitar múltiples resets
+                let tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+                let huboCambio = false;
+
+                tareas = tareas.map(t => {
+                    if (t.done) {
+                        huboCambio = true;
+                        return { ...t, done: false };
+                    }
+                    return t;
+                });
+
+                if (huboCambio) {
+                    localStorage.setItem('rutina', JSON.stringify(tareas));
+                    cargarRutina();
+                    console.log('Tareas completadas reseteadas a las 7:00 AM');
+                }
+            }
+        }
+
+        function toggleTarea(i) {
+            let tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+            tareas[i].done = !tareas[i].done;
+            localStorage.setItem('rutina', JSON.stringify(tareas));
+            cargarRutina();
+        }
+
+        function eliminarTarea(i) {
+            let tareas = JSON.parse(localStorage.getItem('rutina') || '[]');
+            tareas.splice(i, 1);
             localStorage.setItem('rutina', JSON.stringify(tareas));
             cargarRutina();
         }
@@ -464,84 +533,59 @@
         // Horario
         function generarHorario() {
             const grid = document.getElementById('horario-grid');
-            grid.innerHTML = '';  // Limpia todo
+            grid.innerHTML = '';
 
-            // Esquina vacía arriba-izquierda
-            const empty = document.createElement('div');
-            empty.className = 'time-label';
-            grid.appendChild(empty);
+            // Esquina vacía
+            grid.innerHTML += '<div></div>';
 
-            // Headers de días (Lun a Vie)
-            dias.forEach(dia => {
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.textContent = dia;
-                grid.appendChild(header);
+            dias.forEach(d => {
+                grid.innerHTML += `<div class="day-header">${d}</div>`;
             });
 
-            // Filas de bloques
-            bloques.forEach((bloque, index) => {  // index = 0 para bloque 1, 1 para bloque 2, etc.
-                const bloqueNum = index + 1;  // 1,2,3,4,5,6
-
-                // Columna de tiempo
-                const timeDiv = document.createElement('div');
-                timeDiv.className = 'time-label';
-                timeDiv.innerHTML = `${bloque.inicio}<br>-<br>${bloque.fin}`;
-                grid.appendChild(timeDiv);
-
-                // Slots para cada día
-                dias.forEach(dia => {
-                    const key = `${dia.toLowerCase()}-${bloqueNum}`;  // ej: lun-1, mar-3, vie-6
-                    const slotData = horarioData[key] || {};
-
-                    const slot = document.createElement('div');
-                    slot.className = 'slot';
-                    slot.dataset.key = key;  // Esto es clave: asigna correctamente
-                    slot.style.background = slotData.color ? `${slotData.color}40` : '';
-
-                    if (slotData.titulo) {
-                        slot.innerHTML = `
-                            <div class="slot-title">${slotData.titulo}</div>
-                            <div class="slot-subtitle">${slotData.subtitulo || ''}</div>
-                        `;
-                    }
-
-                    slot.addEventListener('click', () => editarSlot(slot));
-                    grid.appendChild(slot);
+            bloques.forEach((b, idx) => {
+                grid.innerHTML += `<div class="time-col">${b.inicio}<br>–<br>${b.fin}</div>`;
+                dias.forEach(d => {
+                    const key = `${d.toLowerCase()}-${idx+1}`;
+                    const data = horarioData[key] || {};
+                    grid.innerHTML += `
+                        <div class="slot" data-key="${key}" onclick="editarSlot('${key}')">
+                            <div class="slot-title">${data.titulo || ''}</div>
+                            <div class="slot-subtitle">${data.subtitulo || ''}</div>
+                        </div>
+                    `;
                 });
             });
         }
 
-        function toggleEditHorario() {
+        function toggleEditMode() {
             editMode = !editMode;
-            const btn = document.getElementById('edit-horario');
-            btn.textContent = editMode ? '✔ Listo' : 'Editar';
-            btn.classList.toggle('done', editMode);
-            document.querySelectorAll('.slot').forEach(s => s.classList.toggle('editable', editMode));
+            const btn = document.getElementById('edit-btn');
+            const root = document.documentElement;
+            btn.style.background = editMode 
+                ? getComputedStyle(root).getPropertyValue('--accent-dark').trim()
+                : getComputedStyle(root).getPropertyValue('--green').trim();
+
         }
 
-        function editarSlot(slot) {
+        function editarSlot(key) {
             if (!editMode) return;
-            currentSlotKey = slot.dataset.key;
-            const slotData = horarioData[currentSlotKey] || {};
-            
-            document.getElementById('slot-titulo').value = slotData.titulo || '';
-            document.getElementById('slot-subtitulo').value = slotData.subtitulo || '';
-            document.getElementById('slot-color').value = slotData.color || '#7c3aed';
-            
-            const modal = document.getElementById('modal-edit-slot');
-            modal.style.display = 'flex';  // Forzamos flex para centrar
+            currentKey = key;
+            const data = horarioData[key] || {};
+            document.getElementById('slot-titulo').value = data.titulo || '';
+            document.getElementById('slot-subtitulo').value = data.subtitulo || '';
+            document.getElementById('slot-color').value = data.color || '#0a84ff';
+            document.getElementById('modal').style.display = 'flex';
         }
 
-        function guardarSlotEdit() {
+        function guardarSlot() {
             const titulo = document.getElementById('slot-titulo').value.trim();
             const subtitulo = document.getElementById('slot-subtitulo').value.trim();
             const color = document.getElementById('slot-color').value;
 
             if (titulo) {
-                horarioData[currentSlotKey] = {titulo, subtitulo, color};
+                horarioData[currentKey] = { titulo, subtitulo, color };
             } else {
-                delete horarioData[currentSlotKey];
+                delete horarioData[currentKey];
             }
             localStorage.setItem('horario', JSON.stringify(horarioData));
             generarHorario();
@@ -549,21 +593,67 @@
         }
 
         function cerrarModal() {
-            document.getElementById('modal-edit-slot').style.display = 'none';
-            currentSlotKey = null;
+            document.getElementById('modal').style.display = 'none';
+            currentKey = null;
         }
 
-        // Cierre al tocar fuera del contenido (mejora UX)
-        document.getElementById('modal-edit-slot').addEventListener('click', function(e) {
-            if (e.target === this) cerrarModal();
-        });
+        // Cuenta
+        function cargarPerfil() {
+            const data = JSON.parse(localStorage.getItem('perfil') || '{}');
+            document.getElementById('nombre-display').textContent = data.nombre || 'Usuario';
+            document.getElementById('email-display').textContent = data.email || 'email@ejemplo.com';
+            if (data.foto) document.getElementById('foto-preview').src = data.foto;
+        }
 
-        // Init
+        function mostrarFormulario() {
+            document.getElementById('form-edit').style.display = 'block';
+            const data = JSON.parse(localStorage.getItem('perfil') || '{}');
+            document.getElementById('nombre-input').value = data.nombre || '';
+            document.getElementById('email-input').value = data.email || '';
+        }
+
+        function ocultarFormulario() {
+            document.getElementById('form-edit').style.display = 'none';
+        }
+
+        function guardarPerfil() {
+            const nombre = document.getElementById('nombre-input').value.trim();
+            const email = document.getElementById('email-input').value.trim();
+            const file = document.getElementById('foto-input').files[0];
+
+            const data = { nombre, email };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    data.foto = e.target.result;
+                    localStorage.setItem('perfil', JSON.stringify(data));
+                    cargarPerfil();
+                    ocultarFormulario();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const old = JSON.parse(localStorage.getItem('perfil') || '{}');
+                data.foto = old.foto;
+                localStorage.setItem('perfil', JSON.stringify(data));
+                cargarPerfil();
+                ocultarFormulario();
+            }
+        }
+
+        // Inicialización
         window.onload = () => {
-            cargarPerfil();
             cargarRutina();
             generarHorario();
-            if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+            cargarPerfil();
+            resetTareasCompletadasSiEsNecesario();
+
+            // Chequear cada 60 segundos (más eficiente que cada segundo)
+            setInterval(resetTareasCompletadasSiEsNecesario, 60000);
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js');
+            }
         };
     </script>
 </body>
