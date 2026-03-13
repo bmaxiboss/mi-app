@@ -132,16 +132,16 @@
         /* Contenedor del horario - limita altura */
         #horario-container {
             width: 100%;
-            max-height: 45vh;                   /* ~45% de la altura de pantalla */
-            overflow-y: auto;                   /* Scroll vertical solo si es necesario */
+            max-height: 38vh;                   /* Reduce más la altura máxima (~38% de pantalla) */
+            overflow-y: auto;
             overflow-x: hidden;
-        }        
+        }     
         /* Grid del horario - casillas rectangulares horizontales */
         #horario-grid {
             display: grid;
-            grid-template-columns: 60px repeat(5, 1fr);
-            grid-auto-rows: 70px;               /* Altura fija baja → más horizontales */
-            gap: 6px;
+            grid-template-columns: 55px repeat(5, 1fr);  /* tiempo angosto + días expansivos */
+            grid-auto-rows: 58px;                        /* altura fija muy baja → proporción horizontal */
+            gap: 5px;
             width: 100%;
         }
         .time-col {
@@ -161,35 +161,46 @@
         /* Celdas */
         .slot {
             background: #2c2c2e;
-            border-radius: 12px;
+            border-radius: 10px;
+            padding: 6px 8px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 0.85rem;
-            padding: 6px 4px;
             overflow: hidden;
             cursor: pointer;
+            position: relative; /* para posicionar texto */
         }
-        /* Título y subtítulo compactos */
+        /* Contenedor interno para controlar texto proporcional */
+        .slot-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
         .slot-title {
             font-weight: 600;
-            font-size: 0.85rem;
-            line-height: 1.1;
-            white-space: nowrap;
+            line-height: 1.15;
+            margin-bottom: 2px;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 100%;
-        }
+            display: -webkit-box;
+            -webkit-line-clamp: 2;          /* máximo 2 líneas */
+            -webkit-box-orient: vertical;
+            max-height: 2.3em;              /* 2 líneas aprox. */
+        }        
         .slot-subtitle {
             font-size: 0.75rem;
             color: var(--text-secondary);
             line-height: 1.1;
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 100%;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;          /* máximo 1 línea */
+            -webkit-box-orient: vertical;
         }
 
         /* Cuenta */
@@ -234,49 +245,72 @@
         nav button .icon-box {
             width: 28px;
             height: 28px;
-            border-radius: 8px;
-            border: 2px solid currentColor;
+            border-radius: 6px;
             position: relative;
+            border: 2px solid currentColor;
         }
         /* Rutina: líneas horizontales (lista) */
         #rutina-btn .icon-box::before,
         #rutina-btn .icon-box::after {
             content: '';
             position: absolute;
-            left: 5px;
-            width: 18px;
+            left: 4.5px;
+            width: 16px;
             height: 2px;
             background: currentColor;
         }
         #rutina-btn .icon-box::before { top: 8px; }
-        #rutina-btn .icon-box::after { top: 18px; }
+        #rutina-btn .icon-box::after  { top: 16px; }
 
-        /* Horario: rectángulo con líneas (calendario) */
+        /* Horario: icono de calendario simple */
+        #horario-btn .icon-box {
+            overflow: hidden;
+        }
         #horario-btn .icon-box::before {
             content: '';
             position: absolute;
-            top: 5px; left: 5px; right: 5px;
-            height: 6px;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            height: 8px;
             border-bottom: 2px solid currentColor;
         }
+        #horario-btn .icon-box::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+        }
 
-        /* Cuenta: silueta persona */
+        /* Cuenta: icono de persona (silueta más limpia) */
         #cuenta-btn .icon-box::before {
             content: '';
             position: absolute;
-            top: 5px; left: 7px;
-            width: 14px; height: 14px;
+            top: 2.5px;
+            left: 6.2px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             border: 2px solid currentColor;
         }
         #cuenta-btn .icon-box::after {
             content: '';
             position: absolute;
-            bottom: 5px; left: 5px; right: 5px;
-            height: 12px;
-            border-radius: 0 0 10px 10px;
+            bottom: 4px;
+            left: 5.2px;
+            right: 5.2px;
+            height: 5px;
+            border-radius: 10px 10px 0 0;
             border: 2px solid currentColor;
-            border-top: none;
+            border-bottom: none;
+        }
+
+        /* Ajuste para que los iconos se vean mejor cuando active */
+        nav button.active .icon-box {
+            border-color: var(--text-primary);
         }
 
         /* Modal edición horario */
@@ -356,6 +390,16 @@
             }
             .slot-title { font-size: 0.9rem; }
             .slot-subtitle { font-size: 0.7rem; }
+        }
+        /* Hacer el tamaño del texto proporcional al ancho de la celda */
+        @media (min-width: 320px) {
+            .slot-title { font-size: clamp(0.75rem, 3.5vw, 0.95rem); }
+            .slot-subtitle { font-size: clamp(0.65rem, 3vw, 0.8rem); }
+        }
+
+        @media (min-width: 400px) {
+            .slot-title { font-size: clamp(0.85rem, 4vw, 1.05rem); }
+            .slot-subtitle { font-size: clamp(0.7rem, 3.5vw, 0.85rem); }
         }              
     </style>
 </head>
@@ -560,29 +604,60 @@
             cargarRutina();
         }
 
-        // Horario
         function generarHorario() {
             const grid = document.getElementById('horario-grid');
-            grid.innerHTML = '';
+            grid.innerHTML = '';  // limpiamos todo
 
-            // Esquina vacía
-            grid.innerHTML += '<div></div>';
+            // Esquina superior izquierda vacía
+            const emptyCorner = document.createElement('div');
+            grid.appendChild(emptyCorner);
 
-            dias.forEach(d => {
-                grid.innerHTML += `<div class="day-header">${d}</div>`;
+            // Headers de días (Lun a Vie)
+            dias.forEach(dia => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = dia;
+                grid.appendChild(header);
             });
 
-            bloques.forEach((b, idx) => {
-                grid.innerHTML += `<div class="time-col">${b.inicio}<br>–<br>${b.fin}</div>`;
-                dias.forEach(d => {
-                    const key = `${d.toLowerCase()}-${idx+1}`;
+            // Filas de bloques horarios
+            bloques.forEach((bloque, index) => {
+                // Columna de hora
+                const timeCell = document.createElement('div');
+                timeCell.className = 'time-col';
+                timeCell.innerHTML = `${bloque.inicio}<br>–<br>${bloque.fin}`;
+                grid.appendChild(timeCell);
+
+                // Celdas para cada día
+                dias.forEach(dia => {
+                    const key = `${dia.toLowerCase()}-${index + 1}`;
                     const data = horarioData[key] || {};
-                    grid.innerHTML += `
-                        <div class="slot" data-key="${key}" onclick="editarSlot('${key}')">
-                            <div class="slot-title">${data.titulo || ''}</div>
-                            <div class="slot-subtitle">${data.subtitulo || ''}</div>
-                        </div>
-                    `;
+
+                    // Celda principal
+                    const slot = document.createElement('div');
+                    slot.className = 'slot';
+                    slot.dataset.key = key;
+                    slot.style.background = data.color ? data.color + '30' : '';
+                    slot.onclick = () => editarSlot(key);
+
+                    // Contenedor interno para texto proporcional
+                    const inner = document.createElement('div');
+                    inner.className = 'slot-inner';
+
+                    // Título
+                    const title = document.createElement('div');
+                    title.className = 'slot-title';
+                    title.textContent = data.titulo || '';
+                    inner.appendChild(title);
+
+                    // Subtítulo
+                    const subtitle = document.createElement('div');
+                    subtitle.className = 'slot-subtitle';
+                    subtitle.textContent = data.subtitulo || '';
+                    inner.appendChild(subtitle);
+
+                    slot.appendChild(inner);
+                    grid.appendChild(slot);
                 });
             });
         }
