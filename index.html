@@ -129,10 +129,18 @@
         }
 
         /* Horario */
+        /* Contenedor del horario - limita altura */
+        #horario-container {
+            width: 100%;
+            max-height: 45vh;                   /* ~45% de la altura de pantalla */
+            overflow-y: auto;                   /* Scroll vertical solo si es necesario */
+            overflow-x: hidden;
+        }        
+        /* Grid del horario - casillas rectangulares horizontales */
         #horario-grid {
             display: grid;
             grid-template-columns: 60px repeat(5, 1fr);
-            grid-auto-rows: 80px;
+            grid-auto-rows: 70px;               /* Altura fija baja → más horizontales */
             gap: 6px;
             width: 100%;
         }
@@ -150,6 +158,7 @@
             padding: 8px 0;
             color: var(--text-secondary);
         }
+        /* Celdas */
         .slot {
             background: #2c2c2e;
             border-radius: 12px;
@@ -157,25 +166,30 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            text-align: center;
             font-size: 0.85rem;
+            padding: 6px 4px;
             overflow: hidden;
             cursor: pointer;
-            padding: 6px;
         }
+        /* Título y subtítulo compactos */
         .slot-title {
             font-weight: 600;
-            max-width: 100%;
+            font-size: 0.85rem;
+            line-height: 1.1;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            max-width: 100%;
         }
         .slot-subtitle {
             font-size: 0.75rem;
             color: var(--text-secondary);
-            max-width: 100%;
+            line-height: 1.1;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            max-width: 100%;
         }
 
         /* Cuenta */
@@ -297,36 +311,52 @@
         .btn-azul {
             background: var(--accent) !important;
         }        
-        /* Botón flotante circular */
+        /* Botón flotante circular + */
         #toggle-add-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
             width: 56px;
             height: 56px;
-            border-radius: 50%;
+            border-radius: 50%;               /* Circular perfecto */
             background: var(--accent);
-            color: white;
-            font-size: 1.8rem;
+            color: rgb(255, 255, 255);
+            font-size: 2rem;                  /* + grande y centrado */
             font-weight: bold;
             border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            display: flex;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            z-index: 100;
+            padding: 0;
+            min-width: 0;
         }
 
-        /* Cuando está en "Listo" (modo input visible) */
+        /* Cuando es "Listo" → rectangular full-width con márgenes */
         #toggle-add-btn.listo {
-            width: 100%;
+            width: calc(100% - 32px);         /* Full-width menos 16px a cada lado */
             height: 56px;
             border-radius: 12px;
             background: var(--green);
             font-size: 1.1rem;
-            bottom: 100px;
-            right: 16px;
             left: 16px;
+            right: 16px;
+            bottom: 100px;
             position: fixed;
-            z-index: 10;
-        }        
+            z-index: 100;
+            padding: 0 16px;                  /* Espacio interno para que no se pegue */
+            box-sizing: border-box;
+        }
+        /* Ajuste para pantallas pequeñas */
+        @media (max-height: 700px) {
+            #horario-grid {
+                grid-auto-rows: 65px;
+            }
+            .slot-title { font-size: 0.9rem; }
+            .slot-subtitle { font-size: 0.7rem; }
+        }              
     </style>
 </head>
 <body>
@@ -466,15 +496,15 @@
             if (mostrandoInput) {
                 container.style.display = 'block';
                 btn.textContent = 'Listo';
-                btn.classList.add('listo');          // Aplica estilo rectangular y full-width
+                btn.classList.add('listo');
                 document.getElementById('nueva-tarea').focus();
             } else {
                 container.style.display = 'none';
                 btn.textContent = '+';
-                btn.classList.remove('listo');       // Vuelve a círculo flotante derecha
+                btn.classList.remove('listo');
                 document.getElementById('nueva-tarea').value = '';
             }
-        }   
+        }
 
         function agregarTarea() {
             const input = document.getElementById('nueva-tarea');
